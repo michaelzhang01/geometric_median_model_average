@@ -7,10 +7,16 @@ Weiszfeld Geometric Median Code
 @author: Michael Zhang
 """
 #import pdb
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
+from past.builtins import xrange
+#from past.builtins import map
 import numpy as np
 from sklearn.metrics.pairwise import rbf_kernel
+import matplotlib.pyplot as plt
 
-def geometric_median(X, eps = 1e-10, verbose=True, sigma=1e-6):
+def geometric_median(X, eps = 1e-10, verbose=True, sigma=1e-2):
     """
     X is a M x D matrix (M subsets)
     eps is error tolerance (float)
@@ -90,4 +96,24 @@ def measure_dist(X,Y,sigma):
 #            raise
     else:
         return(dist_XY)
-    
+
+if __name__ == '__main__':
+    X = np.random.normal(scale=np.sqrt(2),size=(5,1000,2))
+    median_x = geometric_median(X)
+    f,a = plt.subplots(1,2,figsize=(8,4))
+    a[0].hist2d(median_x[:,0],median_x[:,1],bins=(10,10))
+    a[0].set_title('Geometric Median')
+    a[1].hist2d(X.reshape(-1,2)[:,0],X.reshape(-1,2)[:,1],bins=(20,20))
+    a[1].set_title('Samples')
+    f.savefig("geometric_median_1.png", dpi=100, format='png', bbox_inches='tight')
+    X_skewed= np.empty((5,1000,2))
+    X_skewed[:3] = np.random.normal((5,3), scale=np.sqrt(2),size=(3,1000,2))
+    X_skewed[3] = np.random.normal((10,7), scale=np.sqrt(2),size=(1,1000,2))
+    X_skewed[4] = np.random.normal((-5,-3), scale=np.sqrt(2),size=(1,1000,2))
+    median_X_skewed = geometric_median(X_skewed)
+    f2,a2 = plt.subplots(1,2,figsize=(8,4))
+    a2[0].hist2d(median_X_skewed[:,0],median_X_skewed[:,1],bins=(20,20))
+    a2[0].set_title('Geometric Median')
+    a2[1].hist2d(X_skewed.reshape(-1,2)[:,0],X_skewed.reshape(-1,2)[:,1],bins=(20,20))
+    a2[1].set_title('Samples')
+    f2.savefig("geometric_median_2.png", dpi=100, format='png', bbox_inches='tight')
